@@ -9,7 +9,7 @@ def emotion_detector(text_to_analyse):
         text_to_analyse (str): The text to analyze for emotions
         
     Returns:
-        dict: The response from the emotion detection service
+        dict: Formatted emotion scores with dominant emotion
     """
     # Define the URL for the Watson NLP Emotion Detection service
     url = 'https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict'
@@ -35,7 +35,38 @@ def emotion_detector(text_to_analyse):
         if response.status_code == 200:
             # Parse the JSON response
             response_data = response.json()
-            return response_data
+            
+            # Extract emotion scores from the response
+            emotions = response_data['emotionPredictions'][0]['emotion']
+            
+            # Extract individual emotion scores
+            anger_score = emotions['anger']
+            disgust_score = emotions['disgust']
+            fear_score = emotions['fear']
+            joy_score = emotions['joy']
+            sadness_score = emotions['sadness']
+            
+            # Find the dominant emotion (emotion with highest score)
+            emotion_scores = {
+                'anger': anger_score,
+                'disgust': disgust_score,
+                'fear': fear_score,
+                'joy': joy_score,
+                'sadness': sadness_score
+            }
+            
+            # Find the emotion with the maximum score
+            dominant_emotion = max(emotion_scores, key=emotion_scores.get)
+            
+            # Return the formatted output
+            return {
+                'anger': anger_score,
+                'disgust': disgust_score,
+                'fear': fear_score,
+                'joy': joy_score,
+                'sadness': sadness_score,
+                'dominant_emotion': dominant_emotion
+            }
         else:
             return {"error": f"Request failed with status code: {response.status_code}"}
             
